@@ -1,8 +1,8 @@
 {
-  "name": "@catchen/better-console-log",
+  "name": "@catchen/better-console-group",
   "version": "0.1.0",
   "license": "MIT",
-  "exports": "./src/betterGroup.ts",
+  "exports": "./BetterConsoleGroup.ts",
   "compilerOptions": {
     "lib": [
       "deno.window"
