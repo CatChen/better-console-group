@@ -2,7 +2,7 @@
   "name": "@catchen/better-console-log",
   "version": "1.0.0",
   "license": "MIT",
-  "exports": "./src/Storage.ts",
+  "exports": "./src/betterGroup.ts",
   "compilerOptions": {
     "lib": [
       "deno.window"
