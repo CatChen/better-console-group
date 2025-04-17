@@ -9,16 +9,10 @@ const TEST_CALLBACK = jest.fn(function () {
 });
 const TEST_CONTEXT = {};
 
-let consoleGroupSpy;
-let consoleGroupEndSpy;
-let consoleLogSpy;
+const consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation();
+const consoleGroupEndSpy = jest.spyOn(console, 'groupEnd').mockImplementation();
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
 beforeEach(() => {
-  consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation();
-  consoleGroupEndSpy = jest.spyOn(console, 'groupEnd').mockImplementation();
-  consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-});
-
-afterEach(() => {
   jest.clearAllMocks();
 });
 

@@ -1,1 +1,2 @@
-export * from './lib/BetterGroup';
+export * from './lib/betterGroup';
+export * from './lib/asyncGroup';

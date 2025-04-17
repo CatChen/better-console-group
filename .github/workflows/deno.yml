@@ -63,4 +63,3 @@ jobs:
           push-if-not-clean: true
           request-changes-if-not-clean: false
           push-token: ${{ steps.get-github-app-token.outputs.token }}
-
