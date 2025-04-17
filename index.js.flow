@@ -1,0 +1,5 @@
+declare export function betterGroup<T>(
+  label: string,
+  callbackFn: () => T,
+  thisArg?: any,
+): T;
