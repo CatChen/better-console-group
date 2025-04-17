@@ -1,6 +1,9 @@
 {
   "name": "better-console-group",
   "version": "1.0.0",
+  "description": "Better API for console.group.",
+  "funding": "https://github.com/CatChen/versioned-storage?sponsor=1",
+  "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
