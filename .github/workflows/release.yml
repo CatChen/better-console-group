@@ -31,7 +31,7 @@ on:
       diff-targets:
         description: 'Diff Targets'
         required: false
-        default: '{index.*,src/**/*,package.json,deno.json,tsconfig.json,README.md,LICENSE}'
+        default: '{index.*,BetterConsoleGroup.ts,src/**/*,package.json,deno.json,tsconfig.json,README.md,LICENSE}'
         type: string
       dry-run:
         description: 'Dry run'
@@ -89,7 +89,7 @@ jobs:
           prerelease: ${{ inputs.prerelease || false }}
           dry-run: ${{ inputs.dry-run || false }}
           skip-if-no-diff: ${{ inputs.skip-if-no-diff || github.event_name != 'workflow_dispatch' }}
-          diff-targets: ${{ inputs.diff-targets || '{index.*,src/**/*,package.json,deno.json,tsconfig.json,README.md,LICENSE}' }}
+          diff-targets: ${{ inputs.diff-targets || '{index.*,BetterConsoleGroup.ts,src/**/*,package.json,deno.json,tsconfig.json,README.md,LICENSE}' }}
           github-token: ${{ steps.get-github-app-token.outputs.token }}
 
   npm-publish:
