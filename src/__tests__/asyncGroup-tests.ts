@@ -42,89 +42,114 @@ it('is a function', () => {
   expect(asyncGroup).toBeInstanceOf(Function);
 });
 
-it('calls console.group with the correct label', async () => {
-  expect(consoleGroupSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, async () => {});
-  expect(consoleGroupSpy).toHaveBeenCalledWith(TEST_LABEL);
+describe('async group', () => {
+  it('calls console.group with the correct label', async () => {
+    expect(consoleGroupSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, async () => {});
+    expect(consoleGroupSpy).toHaveBeenCalledWith(TEST_LABEL);
+  });
+
+  it('calls console.groupEnd', async () => {
+    expect(consoleGroupEndSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, async () => {});
+    expect(consoleGroupEndSpy).toHaveBeenCalled();
+  });
+
+  it('calls the callback function', async () => {
+    expect(TEST_CALLBACK).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(TEST_CALLBACK).toHaveBeenCalled();
+  });
+
+  it('calls the callback function with the correct context', async () => {
+    const callback = async function () {
+      await Promise.resolve();
+      expect(this).toBe(TEST_CONTEXT);
+    };
+    await asyncGroup(TEST_LABEL, callback, TEST_CONTEXT);
+  });
+
+  it('returns the result of the callback function', async () => {
+    const result = await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(result).toBe(TEST_CALLBACK_RETURN);
+  });
+
+  it('returns undefined if the callback function does not return anything', async () => {
+    const result = await asyncGroup(TEST_LABEL, async () => {});
+    expect(result).toBeUndefined();
+  });
+
+  it('calls console.log with the correct message', async () => {
+    expect(consoleLogSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(consoleLogSpy).toHaveBeenCalledTimes(3);
+    expect(consoleLogSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls console.warn with the correct message', async () => {
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls console.error with the correct message', async () => {
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls console methods in the correct order', async () => {
+    await asyncGroup(TEST_LABEL, async (group: AsyncConsoleGroup) => {
+      await Promise.resolve();
+      group.log(TEST_CALLBACK_LOG);
+      group.warn(TEST_CALLBACK_LOG);
+      group.error(TEST_CALLBACK_LOG);
+      group.debug(TEST_CALLBACK_LOG);
+      group.info(TEST_CALLBACK_LOG);
+      expect(consoleGroupSpy).not.toHaveBeenCalled();
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(consoleGroupEndSpy).not.toHaveBeenCalled();
+    });
+    expect(consoleGroupSpy).toHaveBeenCalled();
+    expect(consoleLogSpy).toHaveBeenCalled();
+    expect(consoleWarnSpy).toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    expect(consoleGroupEndSpy).toHaveBeenCalled();
+  });
 });
 
-it('calls console.groupEnd', async () => {
-  expect(consoleGroupEndSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, async () => {});
-  expect(consoleGroupEndSpy).toHaveBeenCalled();
-});
+describe('nested async group', () => {
+  it('calls console.group with the correct nested label', async () => {
+    expect(consoleGroupSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
+    expect(consoleGroupSpy).toHaveBeenCalledTimes(2);
+    expect(consoleGroupSpy).toHaveBeenCalledWith(TEST_NESTED_LABEL);
+  });
 
-it('calls the callback function', async () => {
-  expect(TEST_CALLBACK).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-  expect(TEST_CALLBACK).toHaveBeenCalled();
-});
+  it('calls console.groupEnd for the nested group', async () => {
+    expect(consoleGroupEndSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
+    expect(consoleGroupEndSpy).toHaveBeenCalledTimes(2);
+  });
 
-it('calls the callback function with the correct context', async () => {
-  const callback = async function () {
-    await Promise.resolve();
-    expect(this).toBe(TEST_CONTEXT);
-  };
-  await asyncGroup(TEST_LABEL, callback, TEST_CONTEXT);
-});
+  it('calls the nested callback function', async () => {
+    expect(TEST_NESTED_CALLBACK).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
+    expect(TEST_NESTED_CALLBACK).toHaveBeenCalled();
+  });
 
-it('returns the result of the callback function', async () => {
-  const result = await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-  expect(result).toBe(TEST_CALLBACK_RETURN);
-});
-
-it('returns undefined if the callback function does not return anything', async () => {
-  const result = await asyncGroup(TEST_LABEL, async () => {});
-  expect(result).toBeUndefined();
-});
-
-it('calls console.log with the correct message', async () => {
-  expect(consoleLogSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-  expect(consoleLogSpy).toHaveBeenCalledTimes(3);
-  expect(consoleLogSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
-});
-
-it('calls console.warn with the correct message', async () => {
-  expect(consoleWarnSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-  expect(consoleWarnSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
-});
-
-it('calls console.error with the correct message', async () => {
-  expect(consoleErrorSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-  expect(consoleErrorSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
-});
-
-it('calls console.group with the correct nested label', async () => {
-  expect(consoleGroupSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
-  expect(consoleGroupSpy).toHaveBeenCalledTimes(2);
-  expect(consoleGroupSpy).toHaveBeenCalledWith(TEST_NESTED_LABEL);
-});
-
-it('calls console.groupEnd for the nested group', async () => {
-  expect(consoleGroupEndSpy).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
-  expect(consoleGroupEndSpy).toHaveBeenCalledTimes(2);
-});
-
-it('calls the nested callback function', async () => {
-  expect(TEST_NESTED_CALLBACK).not.toHaveBeenCalled();
-  await asyncGroup(TEST_LABEL, TEST_NESTED_CALLBACK);
-  expect(TEST_NESTED_CALLBACK).toHaveBeenCalled();
-});
-
-it('calls the nested callback function with the correct context', async () => {
-  await asyncGroup(TEST_LABEL, async function (group: AsyncConsoleGroup) {
-    await group.asyncGroup(
-      TEST_NESTED_LABEL,
-      async function () {
-        await Promise.resolve();
-        expect(this).toBe(TEST_CONTEXT);
-      },
-      TEST_CONTEXT,
-    );
+  it('calls the nested callback function with the correct context', async () => {
+    await asyncGroup(TEST_LABEL, async function (group: AsyncConsoleGroup) {
+      await group.asyncGroup(
+        TEST_NESTED_LABEL,
+        async function () {
+          await Promise.resolve();
+          expect(this).toBe(TEST_CONTEXT);
+        },
+        TEST_CONTEXT,
+      );
+    });
   });
 });
