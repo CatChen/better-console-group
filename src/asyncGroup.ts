@@ -5,6 +5,15 @@ type ConsoleMethodWithParams =
   | ['groupEnd'];
 type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
 
+/**
+ * A private class. Each of its instance represents a grouping of console messages.
+ * You will receive an instance of this class when you call asyncGroup.
+ * You can use this instance to log messages inside the group.
+ * You can also use it to create nested groups.
+ * @private
+ * @class AsyncConsoleGroup
+ * @param buffer The buffer that stores the console messages.
+ */
 class AsyncConsoleGroup {
   #buffer: AsyncConsoleGroupBuffer;
   #ended: boolean = false;
@@ -13,6 +22,14 @@ class AsyncConsoleGroup {
     this.#buffer = buffer;
   }
 
+  /**
+   * Creates a new group nested inside the current group.
+   * @param label Label for the group. The same as you would pass to console.group.
+   * @param callbackFn All the console method calls inside this function will be put in the group.
+   * @param thisArg Optional. The value of `this` inside the callback function.
+   * @template T The type of the value returned from the callback function.
+   * @returns Anything returned from the callback function.
+   */
   async asyncGroup<T>(
     label: string,
     callbackFn: (group: AsyncConsoleGroup) => Promise<T>,
@@ -31,6 +48,8 @@ class AsyncConsoleGroup {
 
   /**
    * Equivalent of console.log when used inside a group.
+   * @param message The message to log.
+   * @param optionalParams Optional parameters to log.
    */
   log(message?: unknown, ...optionalParams: unknown[]): void {
     if (!this.#ended) {
@@ -40,6 +59,8 @@ class AsyncConsoleGroup {
 
   /**
    * Equivalent of console.warn when used inside a group.
+   * @param message The message to log.
+   * @param optionalParams Optional parameters to log.
    */
   warn(message?: unknown, ...optionalParams: unknown[]): void {
     if (!this.#ended) {
@@ -49,6 +70,8 @@ class AsyncConsoleGroup {
 
   /**
    * Equivalent of console.error when used inside a group.
+   * @param message The message to log.
+   * @param optionalParams Optional parameters to log.
    */
   error(message?: unknown, ...optionalParams: unknown[]): void {
     if (!this.#ended) {
@@ -71,8 +94,9 @@ class AsyncConsoleGroup {
   }
 
   /**
-   * Equivalent of console.endGroup when used inside a group.
-   * It flushes the buffer and ends the group.
+   * You should not call this method directly. It is called automatically when the async callback finishes.
+   * @private
+   * @returns The buffer that stores the console messages.
    */
   end(): AsyncConsoleGroupBuffer {
     this.#ended = true;
@@ -80,6 +104,15 @@ class AsyncConsoleGroup {
   }
 }
 
+/**
+ * The async version of betterGroup, which is a better version of console.group and console.groupEnd pair.
+ * It allows you to use async/await inside the group and still have the console output correctly grouped together.
+ * @param label Label for the group. The same as you would pass to console.group.
+ * @param callbackFn All the console method calls inside this function will be put in the group.
+ * @param thisArg Optional. The value of `this` inside the callback function.
+ * @template T The type of the value returned from the callback function.
+ * @returns Anything returned from the callback function.
+ */
 export async function asyncGroup<T>(
   label: string,
   callbackFn: (group: AsyncConsoleGroup) => Promise<T>,

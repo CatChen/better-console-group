@@ -3,6 +3,7 @@
  * @param label Label for the group. The same as you would pass to console.group.
  * @param callbackFn All the console method calls inside this function will be put in the group.
  * @param thisArg Optional. The value of `this` inside the callback function.
+ * @template T The type of the value returned from the callback function.
  * @returns Anything returned from the callback function.
  */
 export function betterGroup<T>(
