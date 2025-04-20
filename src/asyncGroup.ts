@@ -15,11 +15,11 @@ type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
  * @param buffer The buffer that stores the console messages.
  */
 class AsyncConsoleGroup {
-  buffer: AsyncConsoleGroupBuffer;
-  ended: boolean = false;
+  #buffer: AsyncConsoleGroupBuffer;
+  #ended: boolean = false;
 
   constructor(buffer: AsyncConsoleGroupBuffer) {
-    this.buffer = buffer;
+    this.#buffer = buffer;
   }
 
   /**
@@ -39,9 +39,9 @@ class AsyncConsoleGroup {
     const result: T = await callbackFn.call(thisArg ?? globalThis, group); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
     const buffer = group.end();
 
-    this.buffer.push(['group', label]);
-    this.buffer.push(...buffer);
-    this.buffer.push(['groupEnd']);
+    this.#buffer.push(['group', label]);
+    this.#buffer.push(...buffer);
+    this.#buffer.push(['groupEnd']);
 
     return result;
   }
@@ -52,8 +52,8 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   log(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.ended) {
-      this.buffer.push(['log', message, ...optionalParams]);
+    if (!this.#ended) {
+      this.#buffer.push(['log', message, ...optionalParams]);
     }
   }
 
@@ -63,8 +63,8 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   warn(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.ended) {
-      this.buffer.push(['warn', message, ...optionalParams]);
+    if (!this.#ended) {
+      this.#buffer.push(['warn', message, ...optionalParams]);
     }
   }
 
@@ -74,8 +74,8 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   error(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.ended) {
-      this.buffer.push(['error', message, ...optionalParams]);
+    if (!this.#ended) {
+      this.#buffer.push(['error', message, ...optionalParams]);
     }
   }
 
@@ -99,8 +99,8 @@ class AsyncConsoleGroup {
    * @returns The buffer that stores the console messages.
    */
   end(): AsyncConsoleGroupBuffer {
-    this.ended = true;
-    return this.buffer;
+    this.#ended = true;
+    return this.#buffer;
   }
 }
 
