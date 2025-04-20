@@ -1,2 +1,2 @@
-export * from './lib/betterGroup';
-export * from './lib/asyncGroup';
+export * from './lib/betterGroup.js';
+export * from './lib/asyncGroup.js';
