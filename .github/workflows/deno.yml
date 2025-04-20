@@ -41,6 +41,9 @@ jobs:
 
       - run: deno install
 
+      - name: Validate package exports
+        run: deno eval 'import "./BetterConsoleGroup.ts"'
+
       - run: deno fmt --check
 
       - run: deno lint
