@@ -13,6 +13,17 @@ const TEST_CALLBACK = jest.fn(async function (group: AsyncConsoleGroup) {
   group.info(TEST_CALLBACK_LOG);
   return TEST_CALLBACK_RETURN;
 });
+const TEST_ERROR_MESSAGE = 'Test error';
+const TEST_ERROR_CALLBACK = jest.fn(async function (group: AsyncConsoleGroup) {
+  await Promise.resolve();
+  group.log(TEST_CALLBACK_LOG);
+  group.warn(TEST_CALLBACK_LOG);
+  group.error(TEST_CALLBACK_LOG);
+  group.debug(TEST_CALLBACK_LOG);
+  group.info(TEST_CALLBACK_LOG);
+  throw new Error(TEST_ERROR_MESSAGE);
+});
+
 const TEST_NESTED_CALLBACK = jest.fn(async function (group: AsyncConsoleGroup) {
   await group.asyncGroup(
     TEST_NESTED_LABEL,
@@ -117,6 +128,22 @@ describe('async group', () => {
     expect(consoleWarnSpy).toHaveBeenCalled();
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(consoleGroupEndSpy).toHaveBeenCalled();
+  });
+
+  it('calls console.groupEnd when the callback function throws an error', async () => {
+    expect(consoleGroupEndSpy).not.toHaveBeenCalled();
+    try {
+      await asyncGroup(TEST_LABEL, TEST_ERROR_CALLBACK);
+    } catch {
+      /* Empty */
+    }
+    expect(consoleGroupEndSpy).toHaveBeenCalled();
+  });
+
+  it('throws the error from the callback function', async () => {
+    await expect(asyncGroup(TEST_LABEL, TEST_ERROR_CALLBACK)).rejects.toThrow(
+      TEST_ERROR_MESSAGE,
+    );
   });
 });
 
