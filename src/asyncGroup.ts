@@ -119,23 +119,25 @@ export async function asyncGroup<T>(
   thisArg?: unknown,
 ): Promise<T> {
   const group = new AsyncConsoleGroup([]);
-  const result: T = await callbackFn.call(thisArg ?? globalThis, group); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-  const buffer = group.end();
+  try {
+    const result: T = await callbackFn.call(thisArg ?? globalThis, group); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    return result;
+  } finally {
+    const buffer = group.end();
 
-  console.group(label);
-  while (buffer.length > 0) {
-    const [method, message, ...optionalParams] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
-    if (method === 'group') {
-      console.group(message);
-    } else if (method === 'groupEnd') {
-      console.groupEnd();
-    } else {
-      console[method](message, ...optionalParams);
+    console.group(label);
+    while (buffer.length > 0) {
+      const [method, message, ...optionalParams] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
+      if (method === 'group') {
+        console.group(message);
+      } else if (method === 'groupEnd') {
+        console.groupEnd();
+      } else {
+        console[method](message, ...optionalParams);
+      }
     }
+    console.groupEnd();
   }
-  console.groupEnd();
-
-  return result;
 }
 
 export type { AsyncConsoleGroup };

@@ -7,6 +7,11 @@ const TEST_CALLBACK = jest.fn(function () {
   console.log(TEST_CALLBACK_LOG);
   return TEST_CALLBACK_RETURN;
 });
+const TEST_ERROR_MESSAGE = 'Test error';
+const TEST_ERROR_CALLBACK = jest.fn(function () {
+  console.log(TEST_CALLBACK_LOG);
+  throw new Error(TEST_ERROR_MESSAGE);
+});
 const TEST_CONTEXT = {};
 
 const consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation();
@@ -59,4 +64,20 @@ it('calls console.log with the correct message', () => {
   expect(consoleLogSpy).not.toHaveBeenCalled();
   betterGroup(TEST_LABEL, TEST_CALLBACK);
   expect(consoleLogSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+});
+
+it('calls console.groupEnd when the callback function throws an error', () => {
+  expect(consoleGroupEndSpy).not.toHaveBeenCalled();
+  try {
+    betterGroup(TEST_LABEL, TEST_ERROR_CALLBACK);
+  } catch {
+    /* Empty */
+  }
+  expect(consoleGroupEndSpy).toHaveBeenCalled();
+});
+
+it('throws the error from the callback function', () => {
+  expect(() => {
+    betterGroup(TEST_LABEL, TEST_ERROR_CALLBACK);
+  }).toThrow(TEST_ERROR_MESSAGE);
 });
