@@ -1,6 +1,6 @@
 {
   "name": "@catchen/better-console-group",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "exports": "./BetterConsoleGroup.ts",
   "compilerOptions": {
