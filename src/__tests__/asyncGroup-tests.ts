@@ -42,6 +42,7 @@ const TEST_CONTEXT = {};
 
 const TEST_TABLE_DATA = [{ key: 'value' }];
 const TEST_TRACE_LABEL = 'trace label';
+const TEST_TABLE_PROPERTIES = ['key'];
 const TEST_ASSERT_MESSAGE = 'assertion failed';
 const TEST_TIMER_LABEL = 'timer';
 const TEST_DIR_VALUE = { nested: { value: 1 } };
@@ -49,7 +50,7 @@ const TEST_EXTENDED_METHODS_CALLBACK = jest.fn(async function (
   group: AsyncConsoleGroup,
 ) {
   await Promise.resolve();
-  group.table(TEST_TABLE_DATA, ['key']);
+  group.table(TEST_TABLE_DATA, TEST_TABLE_PROPERTIES);
   group.trace(TEST_TRACE_LABEL);
   group.assert(false, TEST_ASSERT_MESSAGE);
   group.time(TEST_TIMER_LABEL);
@@ -151,7 +152,10 @@ describe('async group', () => {
     await asyncGroup(TEST_LABEL, TEST_EXTENDED_METHODS_CALLBACK);
 
     expect(TEST_EXTENDED_METHODS_CALLBACK).toHaveBeenCalled();
-    expect(consoleTableSpy).toHaveBeenCalledWith(TEST_TABLE_DATA, ['key']);
+    expect(consoleTableSpy).toHaveBeenCalledWith(
+      TEST_TABLE_DATA,
+      TEST_TABLE_PROPERTIES,
+    );
     expect(consoleTraceSpy).toHaveBeenCalledWith(TEST_TRACE_LABEL);
     expect(consoleAssertSpy).toHaveBeenCalledWith(false, TEST_ASSERT_MESSAGE);
     expect(consoleTimeSpy).toHaveBeenCalledWith(TEST_TIMER_LABEL);

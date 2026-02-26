@@ -12,17 +12,7 @@ type ConsoleMethod =
   | 'dir';
 
 type ConsoleMethodParams = {
-  log: [message?: unknown, ...optionalParams: unknown[]];
-  warn: [message?: unknown, ...optionalParams: unknown[]];
-  error: [message?: unknown, ...optionalParams: unknown[]];
-  debug: [message?: unknown, ...optionalParams: unknown[]];
-  info: [message?: unknown, ...optionalParams: unknown[]];
-  table: [tabularData?: unknown, properties?: string[]];
-  trace: [...data: unknown[]];
-  assert: [condition?: boolean, ...data: unknown[]];
-  time: [label?: string];
-  timeEnd: [label?: string];
-  dir: [item?: unknown, options?: object];
+  [Method in ConsoleMethod]: Parameters<Console[Method]>;
 };
 
 type ConsoleMethodCall = {
@@ -34,54 +24,6 @@ type ConsoleMethodWithParams =
   | ['group', string]
   | ['groupEnd'];
 type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
-
-const consoleMethodHandlers: {
-  [Method in ConsoleMethod]: (...params: ConsoleMethodParams[Method]) => void;
-} = {
-  log: (...params) => {
-    console.log(...params);
-  },
-  warn: (...params) => {
-    console.warn(...params);
-  },
-  error: (...params) => {
-    console.error(...params);
-  },
-  debug: (...params) => {
-    console.debug(...params);
-  },
-  info: (...params) => {
-    console.info(...params);
-  },
-  table: (...params) => {
-    console.table(...params);
-  },
-  trace: (...params) => {
-    console.trace(...params);
-  },
-  assert: (...params) => {
-    console.assert(...params);
-  },
-  time: (...params) => {
-    console.time(...params);
-  },
-  timeEnd: (...params) => {
-    console.timeEnd(...params);
-  },
-  dir: (...params) => {
-    console.dir(...params);
-  },
-};
-
-function replayConsoleMethod<Method extends ConsoleMethod>(
-  method: Method,
-  ...params: ConsoleMethodParams[Method]
-): void {
-  const handler = consoleMethodHandlers[method] as (
-    ...handlerParams: ConsoleMethodParams[Method]
-  ) => void;
-  handler(...params);
-}
 
 /**
  * A private class. Each of its instance represents a grouping of console messages.
@@ -105,7 +47,7 @@ class AsyncConsoleGroup {
     ...params: ConsoleMethodParams[Method]
   ): void {
     if (!this.#ended) {
-      this.#buffer.push([method, ...params] as ConsoleMethodCall);
+      this.#buffer.push([method, ...params] as unknown as ConsoleMethodCall);
     }
   }
 
@@ -197,11 +139,16 @@ class AsyncConsoleGroup {
 
   /**
    * Equivalent of console.assert when used inside a group.
-   * @param condition Condition to assert.
-   * @param data Optional values to log when the assertion fails.
+   * @param value Value to assert.
+   * @param message Optional message to log when the assertion fails.
+   * @param optionalParams Optional parameters to log when the assertion fails.
    */
-  assert(condition?: boolean, ...data: unknown[]): void {
-    this.#push('assert', condition, ...data);
+  assert(
+    value?: unknown,
+    message?: string,
+    ...optionalParams: unknown[]
+  ): void {
+    this.#push('assert', value, message, ...optionalParams);
   }
 
   /**
@@ -271,7 +218,41 @@ export async function asyncGroup<T>(
         console.groupEnd();
       } else {
         const [method, ...params] = entry;
-        replayConsoleMethod(method, ...params);
+        switch (method) {
+          case 'log':
+            console.log(...params);
+            break;
+          case 'warn':
+            console.warn(...params);
+            break;
+          case 'error':
+            console.error(...params);
+            break;
+          case 'debug':
+            console.debug(...params);
+            break;
+          case 'info':
+            console.info(...params);
+            break;
+          case 'table':
+            console.table(...params);
+            break;
+          case 'trace':
+            console.trace(...params);
+            break;
+          case 'assert':
+            console.assert(...params);
+            break;
+          case 'time':
+            console.time(...params);
+            break;
+          case 'timeEnd':
+            console.timeEnd(...params);
+            break;
+          case 'dir':
+            console.dir(...params);
+            break;
+        }
       }
     }
     console.groupEnd();
