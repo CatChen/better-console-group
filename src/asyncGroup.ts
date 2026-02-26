@@ -139,16 +139,16 @@ class AsyncConsoleGroup {
 
   /**
    * Equivalent of console.assert when used inside a group.
-   * @param value Value to assert.
+   * @param condition Condition to assert.
    * @param message Optional message to log when the assertion fails.
    * @param optionalParams Optional parameters to log when the assertion fails.
    */
   assert(
-    value?: unknown,
+    condition?: boolean,
     message?: string,
     ...optionalParams: unknown[]
   ): void {
-    this.#push('assert', value, message, ...optionalParams);
+    this.#push('assert', condition, message, ...optionalParams);
   }
 
   /**
@@ -210,49 +210,47 @@ export async function asyncGroup<T>(
 
     console.group(label);
     while (buffer.length > 0) {
-      const entry = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
-      if (entry[0] === 'group') {
-        const [, groupLabel] = entry;
-        console.group(groupLabel);
-      } else if (entry[0] === 'groupEnd') {
-        console.groupEnd();
-      } else {
-        const [method, ...params] = entry;
-        switch (method) {
-          case 'log':
-            console.log(...params);
-            break;
-          case 'warn':
-            console.warn(...params);
-            break;
-          case 'error':
-            console.error(...params);
-            break;
-          case 'debug':
-            console.debug(...params);
-            break;
-          case 'info':
-            console.info(...params);
-            break;
-          case 'table':
-            console.table(...params);
-            break;
-          case 'trace':
-            console.trace(...params);
-            break;
-          case 'assert':
-            console.assert(...params);
-            break;
-          case 'time':
-            console.time(...params);
-            break;
-          case 'timeEnd':
-            console.timeEnd(...params);
-            break;
-          case 'dir':
-            console.dir(...params);
-            break;
-        }
+      const [method, ...params] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
+      switch (method) {
+        case 'group':
+          console.group(params[0] as string);
+          break;
+        case 'groupEnd':
+          console.groupEnd();
+          break;
+        case 'log':
+          console.log(...params);
+          break;
+        case 'warn':
+          console.warn(...params);
+          break;
+        case 'error':
+          console.error(...params);
+          break;
+        case 'debug':
+          console.debug(...params);
+          break;
+        case 'info':
+          console.info(...params);
+          break;
+        case 'table':
+          console.table(...params);
+          break;
+        case 'trace':
+          console.trace(...params);
+          break;
+        case 'assert':
+          console.assert(...params);
+          break;
+        case 'time':
+          console.time(...params);
+          break;
+        case 'timeEnd':
+          console.timeEnd(...params);
+          break;
+        case 'dir':
+          console.dir(...params);
+          break;
       }
     }
     console.groupEnd();
