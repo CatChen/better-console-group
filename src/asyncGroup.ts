@@ -1,13 +1,87 @@
-type ConsoleMethodCall<Args extends unknown[] = unknown[]> = [
-  method: (...args: Args) => void,
-  ...params: Args,
-];
+type ConsoleMethod =
+  | 'log'
+  | 'warn'
+  | 'error'
+  | 'debug'
+  | 'info'
+  | 'table'
+  | 'trace'
+  | 'assert'
+  | 'time'
+  | 'timeEnd'
+  | 'dir';
+
+type ConsoleMethodParams = {
+  log: [message?: unknown, ...optionalParams: unknown[]];
+  warn: [message?: unknown, ...optionalParams: unknown[]];
+  error: [message?: unknown, ...optionalParams: unknown[]];
+  debug: [message?: unknown, ...optionalParams: unknown[]];
+  info: [message?: unknown, ...optionalParams: unknown[]];
+  table: [tabularData?: unknown, properties?: string[]];
+  trace: [...data: unknown[]];
+  assert: [condition?: boolean, ...data: unknown[]];
+  time: [label?: string];
+  timeEnd: [label?: string];
+  dir: [item?: unknown, options?: object];
+};
+
+type ConsoleMethodCall = {
+  [Method in ConsoleMethod]: [Method, ...ConsoleMethodParams[Method]];
+}[ConsoleMethod];
 
 type ConsoleMethodWithParams =
   | ConsoleMethodCall
   | ['group', string]
   | ['groupEnd'];
 type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
+
+const consoleMethodHandlers: {
+  [Method in ConsoleMethod]: (...params: ConsoleMethodParams[Method]) => void;
+} = {
+  log: (...params) => {
+    console.log(...params);
+  },
+  warn: (...params) => {
+    console.warn(...params);
+  },
+  error: (...params) => {
+    console.error(...params);
+  },
+  debug: (...params) => {
+    console.debug(...params);
+  },
+  info: (...params) => {
+    console.info(...params);
+  },
+  table: (...params) => {
+    console.table(...params);
+  },
+  trace: (...params) => {
+    console.trace(...params);
+  },
+  assert: (...params) => {
+    console.assert(...params);
+  },
+  time: (...params) => {
+    console.time(...params);
+  },
+  timeEnd: (...params) => {
+    console.timeEnd(...params);
+  },
+  dir: (...params) => {
+    console.dir(...params);
+  },
+};
+
+function replayConsoleMethod<Method extends ConsoleMethod>(
+  method: Method,
+  ...params: ConsoleMethodParams[Method]
+): void {
+  const handler = consoleMethodHandlers[method] as (
+    ...handlerParams: ConsoleMethodParams[Method]
+  ) => void;
+  handler(...params);
+}
 
 /**
  * A private class. Each of its instance represents a grouping of console messages.
@@ -26,12 +100,12 @@ class AsyncConsoleGroup {
     this.#buffer = buffer;
   }
 
-  #push<Args extends unknown[]>(
-    method: (...args: Args) => void,
-    ...params: Args
+  #push<Method extends ConsoleMethod>(
+    method: Method,
+    ...params: ConsoleMethodParams[Method]
   ): void {
     if (!this.#ended) {
-      this.#buffer.push([method, ...params]);
+      this.#buffer.push([method, ...params] as ConsoleMethodCall);
     }
   }
 
@@ -65,13 +139,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   log(message?: unknown, ...optionalParams: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.log(...params);
-      },
-      message,
-      ...optionalParams,
-    );
+    this.#push('log', message, ...optionalParams);
   }
 
   /**
@@ -80,13 +148,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   warn(message?: unknown, ...optionalParams: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.warn(...params);
-      },
-      message,
-      ...optionalParams,
-    );
+    this.#push('warn', message, ...optionalParams);
   }
 
   /**
@@ -95,13 +157,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   error(message?: unknown, ...optionalParams: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.error(...params);
-      },
-      message,
-      ...optionalParams,
-    );
+    this.#push('error', message, ...optionalParams);
   }
 
   /**
@@ -110,13 +166,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   debug(message?: unknown, ...optionalParams: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.debug(...params);
-      },
-      message,
-      ...optionalParams,
-    );
+    this.#push('debug', message, ...optionalParams);
   }
 
   /**
@@ -125,13 +175,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   info(message?: unknown, ...optionalParams: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.info(...params);
-      },
-      message,
-      ...optionalParams,
-    );
+    this.#push('info', message, ...optionalParams);
   }
 
   /**
@@ -140,13 +184,7 @@ class AsyncConsoleGroup {
    * @param properties Optional list of property names to include in the table.
    */
   table(tabularData?: unknown, properties?: string[]): void {
-    this.#push(
-      (...params) => {
-        console.table(...params);
-      },
-      tabularData,
-      properties,
-    );
+    this.#push('table', tabularData, properties);
   }
 
   /**
@@ -154,12 +192,7 @@ class AsyncConsoleGroup {
    * @param data Optional values to include with the stack trace output.
    */
   trace(...data: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.trace(...params);
-      },
-      ...data,
-    );
+    this.#push('trace', ...data);
   }
 
   /**
@@ -168,13 +201,7 @@ class AsyncConsoleGroup {
    * @param data Optional values to log when the assertion fails.
    */
   assert(condition?: boolean, ...data: unknown[]): void {
-    this.#push(
-      (...params) => {
-        console.assert(...params);
-      },
-      condition,
-      ...data,
-    );
+    this.#push('assert', condition, ...data);
   }
 
   /**
@@ -182,9 +209,7 @@ class AsyncConsoleGroup {
    * @param label Optional timer label.
    */
   time(label?: string): void {
-    this.#push((timerLabel?: string) => {
-      console.time(timerLabel);
-    }, label);
+    this.#push('time', label);
   }
 
   /**
@@ -192,9 +217,7 @@ class AsyncConsoleGroup {
    * @param label Optional timer label.
    */
   timeEnd(label?: string): void {
-    this.#push((timerLabel?: string) => {
-      console.timeEnd(timerLabel);
-    }, label);
+    this.#push('timeEnd', label);
   }
 
   /**
@@ -203,13 +226,7 @@ class AsyncConsoleGroup {
    * @param options Optional inspection options.
    */
   dir(item?: unknown, options?: object): void {
-    this.#push(
-      (dirItem?: unknown, dirOptions?: object) => {
-        console.dir(dirItem, dirOptions);
-      },
-      item,
-      options,
-    );
+    this.#push('dir', item, options);
   }
 
   /**
@@ -254,7 +271,7 @@ export async function asyncGroup<T>(
         console.groupEnd();
       } else {
         const [method, ...params] = entry;
-        method(...params);
+        replayConsoleMethod(method, ...params);
       }
     }
     console.groupEnd();
