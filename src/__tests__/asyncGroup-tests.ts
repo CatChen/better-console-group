@@ -45,6 +45,14 @@ const consoleGroupEndSpy = jest.spyOn(console, 'groupEnd').mockImplementation();
 const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
 const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+const consoleDebugSpy = jest.spyOn(console, 'debug').mockImplementation();
+const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
+const consoleTableSpy = jest.spyOn(console, 'table').mockImplementation();
+const consoleTraceSpy = jest.spyOn(console, 'trace').mockImplementation();
+const consoleAssertSpy = jest.spyOn(console, 'assert').mockImplementation();
+const consoleTimeSpy = jest.spyOn(console, 'time').mockImplementation();
+const consoleTimeEndSpy = jest.spyOn(console, 'timeEnd').mockImplementation();
+const consoleDirSpy = jest.spyOn(console, 'dir').mockImplementation();
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -93,7 +101,7 @@ describe('async group', () => {
   it('calls console.log with the correct message', async () => {
     expect(consoleLogSpy).not.toHaveBeenCalled();
     await asyncGroup(TEST_LABEL, TEST_CALLBACK);
-    expect(consoleLogSpy).toHaveBeenCalledTimes(3);
+    expect(consoleLogSpy).toHaveBeenCalledTimes(1);
     expect(consoleLogSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
   });
 
@@ -107,6 +115,41 @@ describe('async group', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     await asyncGroup(TEST_LABEL, TEST_CALLBACK);
     expect(consoleErrorSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls console.debug with the correct message', async () => {
+    expect(consoleDebugSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(consoleDebugSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls console.info with the correct message', async () => {
+    expect(consoleInfoSpy).not.toHaveBeenCalled();
+    await asyncGroup(TEST_LABEL, TEST_CALLBACK);
+    expect(consoleInfoSpy).toHaveBeenCalledWith(TEST_CALLBACK_LOG);
+  });
+
+  it('calls extended console methods with the correct values', async () => {
+    const tableData = [{ key: 'value' }];
+    const assertMessage = 'assertion failed';
+    const timerLabel = 'timer';
+
+    await asyncGroup(TEST_LABEL, async (group: AsyncConsoleGroup) => {
+      await Promise.resolve();
+      group.table(tableData, ['key']);
+      group.trace('trace label');
+      group.assert(false, assertMessage);
+      group.time(timerLabel);
+      group.timeEnd(timerLabel);
+      group.dir({ nested: { value: 1 } });
+    });
+
+    expect(consoleTableSpy).toHaveBeenCalledWith(tableData, ['key']);
+    expect(consoleTraceSpy).toHaveBeenCalledWith('trace label');
+    expect(consoleAssertSpy).toHaveBeenCalledWith(false, assertMessage);
+    expect(consoleTimeSpy).toHaveBeenCalledWith(timerLabel);
+    expect(consoleTimeEndSpy).toHaveBeenCalledWith(timerLabel);
+    expect(consoleDirSpy).toHaveBeenCalledWith({ nested: { value: 1 } }, undefined);
   });
 
   it('calls console methods in the correct order', async () => {

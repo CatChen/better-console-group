@@ -1,6 +1,17 @@
-type ConsoleMethod = 'log' | 'warn' | 'error' | 'debug' | 'info';
+type ConsoleMethod =
+  | 'log'
+  | 'warn'
+  | 'error'
+  | 'debug'
+  | 'info'
+  | 'table'
+  | 'trace'
+  | 'assert'
+  | 'time'
+  | 'timeEnd'
+  | 'dir';
 type ConsoleMethodWithParams =
-  | [ConsoleMethod, unknown, ...unknown[]]
+  | [ConsoleMethod, ...unknown[]]
   | ['group', string]
   | ['groupEnd'];
 type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
@@ -20,6 +31,12 @@ class AsyncConsoleGroup {
 
   constructor(buffer: AsyncConsoleGroupBuffer) {
     this.#buffer = buffer;
+  }
+
+  #push(method: ConsoleMethod, ...params: unknown[]): void {
+    if (!this.#ended) {
+      this.#buffer.push([method, ...params]);
+    }
   }
 
   /**
@@ -52,9 +69,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   log(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.#ended) {
-      this.#buffer.push(['log', message, ...optionalParams]);
-    }
+    this.#push('log', message, ...optionalParams);
   }
 
   /**
@@ -63,9 +78,7 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   warn(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.#ended) {
-      this.#buffer.push(['warn', message, ...optionalParams]);
-    }
+    this.#push('warn', message, ...optionalParams);
   }
 
   /**
@@ -74,23 +87,63 @@ class AsyncConsoleGroup {
    * @param optionalParams Optional parameters to log.
    */
   error(message?: unknown, ...optionalParams: unknown[]): void {
-    if (!this.#ended) {
-      this.#buffer.push(['error', message, ...optionalParams]);
-    }
+    this.#push('error', message, ...optionalParams);
   }
 
   /**
-   * Alias for group.log.
+   * Equivalent of console.debug when used inside a group.
    */
   debug(message?: unknown, ...optionalParams: unknown[]): void {
-    this.log(message, ...optionalParams);
+    this.#push('debug', message, ...optionalParams);
   }
 
   /**
-   * Alias for group.log.
+   * Equivalent of console.info when used inside a group.
    */
   info(message?: unknown, ...optionalParams: unknown[]): void {
-    this.log(message, ...optionalParams);
+    this.#push('info', message, ...optionalParams);
+  }
+
+  /**
+   * Equivalent of console.table when used inside a group.
+   */
+  table(tabularData: unknown, properties?: string[]): void {
+    this.#push('table', tabularData, properties);
+  }
+
+  /**
+   * Equivalent of console.trace when used inside a group.
+   */
+  trace(...data: unknown[]): void {
+    this.#push('trace', ...data);
+  }
+
+  /**
+   * Equivalent of console.assert when used inside a group.
+   */
+  assert(condition?: boolean, ...data: unknown[]): void {
+    this.#push('assert', condition, ...data);
+  }
+
+  /**
+   * Equivalent of console.time when used inside a group.
+   */
+  time(label?: string): void {
+    this.#push('time', label);
+  }
+
+  /**
+   * Equivalent of console.timeEnd when used inside a group.
+   */
+  timeEnd(label?: string): void {
+    this.#push('timeEnd', label);
+  }
+
+  /**
+   * Equivalent of console.dir when used inside a group.
+   */
+  dir(item?: unknown, options?: object): void {
+    this.#push('dir', item, options);
   }
 
   /**
@@ -127,13 +180,27 @@ export async function asyncGroup<T>(
 
     console.group(label);
     while (buffer.length > 0) {
-      const [method, message, ...optionalParams] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
+      const [method, ...params] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
       if (method === 'group') {
-        console.group(message);
+        console.group(...params);
       } else if (method === 'groupEnd') {
         console.groupEnd();
       } else {
-        console[method](message, ...optionalParams);
+        switch (method) {
+          case 'log':
+          case 'warn':
+          case 'error':
+          case 'debug':
+          case 'info':
+          case 'table':
+          case 'trace':
+          case 'assert':
+          case 'time':
+          case 'timeEnd':
+          case 'dir':
+            (console[method] as (...args: unknown[]) => void)(...params);
+            break;
+        }
       }
     }
     console.groupEnd();
