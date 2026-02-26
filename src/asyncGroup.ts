@@ -210,47 +210,71 @@ export async function asyncGroup<T>(
 
     console.group(label);
     while (buffer.length > 0) {
-      const [method, ...params] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
-      switch (method) {
-        case 'group':
-          console.group(params[0] as string);
+      const [...methodAndParams] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
+      switch (methodAndParams[0]) {
+        case 'group': {
+          const [, nestedLabel] = methodAndParams;
+          console.group(nestedLabel);
           break;
+        }
         case 'groupEnd':
           console.groupEnd();
           break;
-        case 'log':
+        case 'log': {
+          const [, ...params] = methodAndParams;
           console.log(...params);
           break;
-        case 'warn':
+        }
+        case 'warn': {
+          const [, ...params] = methodAndParams;
           console.warn(...params);
           break;
-        case 'error':
+        }
+        case 'error': {
+          const [, ...params] = methodAndParams;
           console.error(...params);
           break;
-        case 'debug':
+        }
+        case 'debug': {
+          const [, ...params] = methodAndParams;
           console.debug(...params);
           break;
-        case 'info':
+        }
+        case 'info': {
+          const [, ...params] = methodAndParams;
           console.info(...params);
           break;
-        case 'table':
+        }
+        case 'table': {
+          const [, ...params] = methodAndParams;
           console.table(...params);
           break;
-        case 'trace':
+        }
+        case 'trace': {
+          const [, ...params] = methodAndParams;
           console.trace(...params);
           break;
-        case 'assert':
+        }
+        case 'assert': {
+          const [, ...params] = methodAndParams;
           console.assert(...params);
           break;
-        case 'time':
+        }
+        case 'time': {
+          const [, ...params] = methodAndParams;
           console.time(...params);
           break;
-        case 'timeEnd':
+        }
+        case 'timeEnd': {
+          const [, ...params] = methodAndParams;
           console.timeEnd(...params);
           break;
-        case 'dir':
+        }
+        case 'dir': {
+          const [, ...params] = methodAndParams;
           console.dir(...params);
           break;
+        }
       }
     }
     console.groupEnd();
