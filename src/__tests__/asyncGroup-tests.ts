@@ -149,7 +149,10 @@ describe('async group', () => {
     expect(consoleAssertSpy).toHaveBeenCalledWith(false, assertMessage);
     expect(consoleTimeSpy).toHaveBeenCalledWith(timerLabel);
     expect(consoleTimeEndSpy).toHaveBeenCalledWith(timerLabel);
-    expect(consoleDirSpy).toHaveBeenCalledWith({ nested: { value: 1 } }, undefined);
+    expect(consoleDirSpy).toHaveBeenCalledWith(
+      { nested: { value: 1 } },
+      undefined,
+    );
   });
 
   it('calls console methods in the correct order', async () => {
