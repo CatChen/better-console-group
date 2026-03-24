@@ -18,7 +18,7 @@
     "npm:prettier@^3.0.2": "3.5.3",
     "npm:ts-jest@^29.2.5": "29.3.4_jest@30.0.0_typescript@5.8.3",
     "npm:typescript-eslint@^8.15.0": "8.30.1_eslint@10.0.0_typescript@5.8.3_@typescript-eslint+parser@8.30.1__eslint@10.0.0__typescript@5.8.3",
-    "npm:typescript@^5.0.2": "5.8.3"
+    "npm:typescript@^6.0.2": "6.0.2"
   },
   "npm": {
     "@ampproject/remapping@2.3.0": {
@@ -833,7 +833,7 @@
         "ignore",
         "natural-compare",
         "ts-api-utils",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "@typescript-eslint/parser@8.30.1_eslint@10.0.0_typescript@5.8.3": {
@@ -845,7 +845,7 @@
         "@typescript-eslint/visitor-keys",
         "debug",
         "eslint",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "@typescript-eslint/scope-manager@8.30.1": {
@@ -863,7 +863,7 @@
         "debug",
         "eslint",
         "ts-api-utils",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "@typescript-eslint/types@8.30.1": {
@@ -880,7 +880,7 @@
         "minimatch@9.0.5",
         "semver@7.7.2",
         "ts-api-utils",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "@typescript-eslint/utils@8.30.1_eslint@10.0.0_typescript@5.8.3": {
@@ -891,7 +891,7 @@
         "@typescript-eslint/types",
         "@typescript-eslint/typescript-estree",
         "eslint",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "@typescript-eslint/visitor-keys@8.30.1": {
@@ -2628,7 +2628,7 @@
     "ts-api-utils@2.1.0_typescript@5.8.3": {
       "integrity": "sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==",
       "dependencies": [
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "ts-jest@29.3.4_jest@30.0.0_typescript@5.8.3": {
@@ -2644,7 +2644,7 @@
         "make-error",
         "semver@7.7.2",
         "type-fest@4.41.0",
-        "typescript",
+        "typescript@5.8.3",
         "yargs-parser"
       ],
       "bin": true
@@ -2674,11 +2674,15 @@
         "@typescript-eslint/parser",
         "@typescript-eslint/utils",
         "eslint",
-        "typescript"
+        "typescript@5.8.3"
       ]
     },
     "typescript@5.8.3": {
       "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
+      "bin": true
+    },
+    "typescript@6.0.2": {
+      "integrity": "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==",
       "bin": true
     },
     "undici-types@6.21.0": {
@@ -2840,7 +2844,7 @@
         "npm:prettier@^3.0.2",
         "npm:ts-jest@^29.2.5",
         "npm:typescript-eslint@^8.15.0",
-        "npm:typescript@^5.0.2"
+        "npm:typescript@^6.0.2"
       ]
     }
   }
