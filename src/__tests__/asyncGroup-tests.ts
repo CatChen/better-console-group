@@ -99,7 +99,7 @@ describe('async group', () => {
   });
 
   it('calls the callback function with the correct context', async () => {
-    const callback = async function () {
+    const callback = async function (this: typeof TEST_CONTEXT) {
       await Promise.resolve();
       expect(this).toBe(TEST_CONTEXT);
     };
@@ -225,7 +225,7 @@ describe('nested async group', () => {
     await asyncGroup(TEST_LABEL, async function (group: AsyncConsoleGroup) {
       await group.asyncGroup(
         TEST_NESTED_LABEL,
-        async function () {
+        async function (this: typeof TEST_CONTEXT) {
           await Promise.resolve();
           expect(this).toBe(TEST_CONTEXT);
         },
