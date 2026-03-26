@@ -44,7 +44,7 @@ it('calls the callback function', () => {
 });
 
 it('calls the callback function with the correct context', () => {
-  const callback = function () {
+  const callback = function (this: typeof TEST_CONTEXT) {
     expect(this).toBe(TEST_CONTEXT);
   };
   betterGroup(TEST_LABEL, callback, TEST_CONTEXT);
