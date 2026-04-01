@@ -5,8 +5,8 @@
     "declaration": true,
     "target": "ES2015",
     "lib": ["es2015", "dom"],
-    "module": "es2022",
-    "moduleResolution": "bundler",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "types": ["jest"]
   },
