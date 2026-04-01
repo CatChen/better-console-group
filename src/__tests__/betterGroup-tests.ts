@@ -1,4 +1,4 @@
-import { betterGroup } from '../betterGroup';
+import { betterGroup } from '../betterGroup.js';
 
 const TEST_LABEL = 'Test Group';
 const TEST_CALLBACK_LOG = 'Inside test callback';
