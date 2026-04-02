@@ -7,22 +7,16 @@
   "tabWidth": 2,
   "trailingComma": "all",
   "importOrder": [
-    "^@action/core/(.*)$",
-    "^@action/github/(.*)$",
-    "^@action/exec/(.*)$",
-    "^@action/glob/(.*)$",
-    "^@action/(.*)$",
+    "<BUILTIN_MODULES>",
+    "<TYPES>",
     "<THIRD_PARTY_MODULES>",
     "^[./]"
   ],
-  "importOrderSortIndividualImports": true,
-  "importOrderMergeDuplicateImports": true,
-  "importOrderBuiltinModulesToTop": true,
-  "importOrderTypeImportsToTop": true,
   "overrides": [
     {
-      "files": "src/*.js",
+      "files": "src/*.js.flow",
       "options": { "parser": "babel-flow" }
     }
-  ]
+  ],
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-package"]
 }

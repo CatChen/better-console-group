@@ -65,7 +65,7 @@ class AsyncConsoleGroup {
     thisArg?: unknown,
   ): Promise<T> {
     const group = new AsyncConsoleGroup([]);
-    const result: T = await callbackFn.call(thisArg ?? globalThis, group); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    const result: T = await callbackFn.call(thisArg ?? globalThis, group);
     const buffer = group.end();
 
     this.#buffer.push(['group', label]);
@@ -203,14 +203,14 @@ export async function asyncGroup<T>(
 ): Promise<T> {
   const group = new AsyncConsoleGroup([]);
   try {
-    const result: T = await callbackFn.call(thisArg ?? globalThis, group); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    const result: T = await callbackFn.call(thisArg ?? globalThis, group);
     return result;
   } finally {
     const buffer = group.end();
 
     console.group(label);
     while (buffer.length > 0) {
-      const [...methodAndParams] = buffer.shift()!; // eslint-disable-line @typescript-eslint/no-unnecessary-type-assertion
+      const [...methodAndParams] = buffer.shift()!;
       switch (methodAndParams[0]) {
         case 'group': {
           const [, nestedLabel] = methodAndParams;
@@ -222,27 +222,27 @@ export async function asyncGroup<T>(
           break;
         case 'log': {
           const [, ...params] = methodAndParams;
-          console.log(...params);
+          console.log(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'warn': {
           const [, ...params] = methodAndParams;
-          console.warn(...params);
+          console.warn(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'error': {
           const [, ...params] = methodAndParams;
-          console.error(...params);
+          console.error(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'debug': {
           const [, ...params] = methodAndParams;
-          console.debug(...params);
+          console.debug(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'info': {
           const [, ...params] = methodAndParams;
-          console.info(...params);
+          console.info(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'table': {
@@ -252,7 +252,7 @@ export async function asyncGroup<T>(
         }
         case 'trace': {
           const [, ...params] = methodAndParams;
-          console.trace(...params);
+          console.trace(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
           break;
         }
         case 'assert': {
