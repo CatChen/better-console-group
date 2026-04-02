@@ -2,7 +2,7 @@
   "name": "@catchen/better-console-group",
   "version": "1.1.4",
   "license": "MIT",
-  "exports": "./src/BetterConsoleGroup.ts",
+  "exports": "./BetterConsoleGroup.ts",
   "compilerOptions": {
     "lib": ["deno.window"]
   },
@@ -11,7 +11,13 @@
     "include": ["src/"]
   },
   "publish": {
-    "include": ["package.json", "src", "README.md", "LICENSE"],
+    "include": [
+      "BetterConsoleGroup.ts",
+      "package.json",
+      "src",
+      "README.md",
+      "LICENSE"
+    ],
     "exclude": ["src/**/__tests__"]
   }
 }

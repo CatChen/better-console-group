@@ -14,7 +14,7 @@
   ],
   "overrides": [
     {
-      "files": "src/*.js.flow",
+      "files": "*.js.flow",
       "options": { "parser": "babel-flow" }
     }
   ],
