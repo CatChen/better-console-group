@@ -42,7 +42,7 @@ jobs:
       - run: deno install
 
       - name: Validate package exports
-        run: deno eval 'import "./BetterConsoleGroup.ts"'
+        run: deno eval 'import "./src/BetterConsoleGroup.ts"'
 
       - run: deno fmt --check
 
