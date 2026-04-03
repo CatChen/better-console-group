@@ -36,6 +36,7 @@ export default ts.config(
       'coverage/**/*',
       '*.js',
       '*.d.ts',
+      'BetterConsoleGroup.ts',
     ],
   }),
   ...ts.configs.recommendedTypeChecked,

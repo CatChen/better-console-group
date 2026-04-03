@@ -1,4 +1,5 @@
-import { type AsyncConsoleGroup, asyncGroup } from '../asyncGroup.js';
+import type { AsyncConsoleGroup } from '../asyncGroup.js';
+import { asyncGroup } from '../asyncGroup.js';
 
 const TEST_LABEL = 'Test Group';
 const TEST_NESTED_LABEL = 'Nested Group';

@@ -13,7 +13,7 @@ export function betterGroup<T>(
 ): T {
   console.group(label);
   try {
-    const result: T = callbackFn.call(thisArg ?? globalThis); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    const result: T = callbackFn.call(thisArg ?? globalThis);
     return result;
   } finally {
     console.groupEnd();
