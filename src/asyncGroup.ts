@@ -210,70 +210,18 @@ export async function asyncGroup<T>(
 
     console.group(label);
     while (buffer.length > 0) {
-      const [...methodAndParams] = buffer.shift()!;
+      const methodAndParams = buffer.shift()!;
       switch (methodAndParams[0]) {
-        case 'group': {
-          const [, nestedLabel] = methodAndParams;
-          console.group(nestedLabel);
+        case 'group':
+          console.group(methodAndParams[1]);
           break;
-        }
         case 'groupEnd':
           console.groupEnd();
           break;
-        case 'log': {
-          const [, ...params] = methodAndParams;
-          console.log(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'warn': {
-          const [, ...params] = methodAndParams;
-          console.warn(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'error': {
-          const [, ...params] = methodAndParams;
-          console.error(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'debug': {
-          const [, ...params] = methodAndParams;
-          console.debug(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'info': {
-          const [, ...params] = methodAndParams;
-          console.info(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'table': {
-          const [, ...params] = methodAndParams;
-          console.table(...params);
-          break;
-        }
-        case 'trace': {
-          const [, ...params] = methodAndParams;
-          console.trace(...params); // eslint-disable-line @typescript-eslint/no-unsafe-argument
-          break;
-        }
-        case 'assert': {
-          const [, ...params] = methodAndParams;
-          console.assert(...params);
-          break;
-        }
-        case 'time': {
-          const [, ...params] = methodAndParams;
-          console.time(...params);
-          break;
-        }
-        case 'timeEnd': {
-          const [, ...params] = methodAndParams;
-          console.timeEnd(...params);
-          break;
-        }
-        case 'dir': {
-          const [, ...params] = methodAndParams;
-          console.dir(...params);
-          break;
+        default: {
+          const [method, ...params] = methodAndParams;
+
+          (console[method] as (...args: unknown[]) => void)(...params);
         }
       }
     }
