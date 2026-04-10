@@ -134,7 +134,7 @@ for (let imageURL in imageURLs) {
       });
     }
 
-    group.log('Finish processing image.');=
+    group.log('Finish processing image.');
   });
   processingPromises.push(processingPromise);
 }

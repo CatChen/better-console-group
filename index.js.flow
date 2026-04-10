@@ -1,5 +1,30 @@
+declare class AsyncConsoleGroup {
+  asyncGroup<T>(
+    label: string,
+    callbackFn: (group: AsyncConsoleGroup) => Promise<T>,
+    thisArg?: any,
+  ): Promise<T>;
+  log(message?: any, ...optionalParams: any[]): void;
+  warn(message?: any, ...optionalParams: any[]): void;
+  error(message?: any, ...optionalParams: any[]): void;
+  debug(message?: any, ...optionalParams: any[]): void;
+  info(message?: any, ...optionalParams: any[]): void;
+  table(tabularData?: any, properties?: Array<string>): void;
+  trace(...data: any[]): void;
+  assert(condition?: boolean, message?: string, ...optionalParams: any[]): void;
+  time(label?: string): void;
+  timeEnd(label?: string): void;
+  dir(item?: any, options?: { ... }): void;
+}
+
 declare export function betterGroup<T>(
   label: string,
   callbackFn: () => T,
   thisArg?: any,
 ): T;
+
+declare export function asyncGroup<T>(
+  label: string,
+  callbackFn: (group: AsyncConsoleGroup) => Promise<T>,
+  thisArg?: any,
+): Promise<T>;
