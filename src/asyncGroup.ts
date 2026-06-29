@@ -20,9 +20,7 @@ type ConsoleMethodCall = {
 }[ConsoleMethod];
 
 type ConsoleMethodWithParams =
-  | ConsoleMethodCall
-  | ['group', string]
-  | ['groupEnd'];
+  ConsoleMethodCall | ['group', string] | ['groupEnd'];
 type AsyncConsoleGroupBuffer = Array<ConsoleMethodWithParams>;
 
 /**
